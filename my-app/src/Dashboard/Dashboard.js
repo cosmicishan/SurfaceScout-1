@@ -3,15 +3,34 @@ import './dashboard.css';
 import axios from 'axios';
 import { Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import demoImage from '../Images/demoImage.jpg';
 
 
 const Dashboard = () => {
   const [imageSrc, setImageSrc] = useState('');
-  const [images, setImages] = useState(['https://i.ibb.co/gjG368W/Whats-App-Image-2024-08-10-at-12-20-35-590bc4f7.jpg']);
+  const [images, setImages] = useState([demoImage]);
   const [ispredicting, setIspredicting] = useState(false);
   const [isDonePredicting, setIsDonePredicting] = useState(false);
   const [prediction, setPrediction] = useState("---");
+  const [apiKey, setApiKey] = useState('');
+
+  useEffect(() => {
+    if (document.cookie) {
+      const cookie = document.cookie.split(';').find(row => row.startsWith('apiKey='));
+      if (cookie) {
+        setApiKey(cookie.split('=')[1]);
+        return;
+      }
+    }
+    if (!apiKey) {
+      const key = prompt('Please enter API key');
+      if (key) {
+        setApiKey(key);
+        // setting api key in cookie
+        document.cookie = `apiKey=${key}`;
+      }
+    }
+  }, []);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -109,7 +128,7 @@ const Dashboard = () => {
       cropCanvas.width = image.width;
       cropCanvas.height = image.height;
       ctx.drawImage(image, 0, 0);
-      axios.post('https://d00c-2409-40c1-1008-97aa-8e5f-fbae-8044-f3b8.ngrok-free.app/rockPredict', { image: cropCanvas.toDataURL() })
+      axios.post(`https://${apiKey}/rockPredict`, { image: cropCanvas.toDataURL() })
         .then(res => {
           setPrediction("---");
           let link = `data:image/png;base64,${res.data.image}`;
@@ -145,7 +164,7 @@ const Dashboard = () => {
       // Sending image to the server using axios
 
 
-      axios.post('https://d00c-2409-40c1-1008-97aa-8e5f-fbae-8044-f3b8.ngrok-free.app/predict', { image: cropCanvas.toDataURL() })
+      axios.post('https://${apiKey}/predict', { image: cropCanvas.toDataURL() })
       .then(res => {
         console.log(res.data);
         setPrediction(res.data.modelOutput);
@@ -197,7 +216,7 @@ const Dashboard = () => {
     setPoints([]);
 
     // Sending image to the server using axios
-    axios.post('https://d00c-2409-40c1-1008-97aa-8e5f-fbae-8044-f3b8.ngrok-free.app/predict', { image: cropCanvas.toDataURL() })
+    axios.post('https://${apiKey}/rockPredict/predict', { image: cropCanvas.toDataURL() })
     .then(res => {
         console.log(res.data);
         setPrediction(res.data.modelOutput);
