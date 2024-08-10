@@ -201,8 +201,6 @@ const Dashboard = () => {
       ctx.drawImage(image, 0, 0);
 
       // Sending image to the server using axios
-
-
       axios.post(`https://${apiKey}/predict`, { image: cropCanvas.toDataURL() })
         .then(res => {
           console.log(res.data);
@@ -255,7 +253,7 @@ const Dashboard = () => {
     setPoints([]);
 
     // Sending image to the server using axios
-    axios.post(`https://${apiKey}/rockPredict/predict`, { image: cropCanvas.toDataURL() })
+    axios.post(`https://${apiKey}/predict`, { image: cropCanvas.toDataURL() })
       .then(res => {
         console.log(res.data);
         setPrediction(res.data.modelOutput);
