@@ -115,12 +115,12 @@ const Dashboard = () => {
   }, [points]);
 
   const cropImage = () => {
-      // taking that which model are selected
+    // taking that which model are selected
     const model = document.getElementById('model').value;
 
     console.log(model);
 
-    
+
     if (model === 'rockDetect') {
       const cropCanvas = document.createElement('canvas');
       const ctx = cropCanvas.getContext('2d');
@@ -128,6 +128,45 @@ const Dashboard = () => {
       cropCanvas.width = image.width;
       cropCanvas.height = image.height;
       ctx.drawImage(image, 0, 0);
+
+      if (points.length >= 3) {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const image = imageRef.current;
+
+        // Calculate the bounding box of the polygon
+        const minX = Math.min(...points.map(point => point.x));
+        const minY = Math.min(...points.map(point => point.y));
+        const maxX = Math.max(...points.map(point => point.x));
+        const maxY = Math.max(...points.map(point => point.y));
+        const width = maxX - minX;
+        const height = maxY - minY;
+
+        // Create a new canvas for the cropped image with the size of the bounding box
+        const cropCanvas = document.createElement('canvas');
+        const cropCtx = cropCanvas.getContext('2d');
+        cropCanvas.width = width;
+        cropCanvas.height = height;
+
+        // Draw the polygon path on the new canvas, adjusted for the bounding box
+        cropCtx.beginPath();
+        cropCtx.moveTo(points[0].x - minX, points[0].y - minY);
+        points.forEach(point => cropCtx.lineTo(point.x - minX, point.y - minY));
+        cropCtx.closePath();
+        cropCtx.clip();
+
+        // Draw the image into the cropped canvas, adjusted for the bounding box
+        cropCtx.drawImage(image, -minX, -minY);
+
+        // Create a new image element to show the cropped area
+        const croppedImage = new Image();
+        croppedImage.src = cropCanvas.toDataURL();
+        setImageSrc(croppedImage.src);
+        setImages([...images, croppedImage.src]);
+        setPoints([]);
+      }
+
+
       axios.post(`https://${apiKey}/rockPredict`, { image: cropCanvas.toDataURL() })
         .then(res => {
           setPrediction("---");
@@ -164,18 +203,18 @@ const Dashboard = () => {
       // Sending image to the server using axios
 
 
-      axios.post('https://${apiKey}/predict', { image: cropCanvas.toDataURL() })
-      .then(res => {
-        console.log(res.data);
-        setPrediction(res.data.modelOutput);
-      })
-      .catch(err => {
-        console.log(err);
-        setPrediction('Something went wrong.');
-      })
-      .finally(() => {
-        setIspredicting(false);
-      });
+      axios.post(`https://${apiKey}/predict`, { image: cropCanvas.toDataURL() })
+        .then(res => {
+          console.log(res.data);
+          setPrediction(res.data.modelOutput);
+        })
+        .catch(err => {
+          console.log(err);
+          setPrediction('Something went wrong.');
+        })
+        .finally(() => {
+          setIspredicting(false);
+        });
       setIspredicting(false);
       return;
     }
@@ -216,8 +255,8 @@ const Dashboard = () => {
     setPoints([]);
 
     // Sending image to the server using axios
-    axios.post('https://${apiKey}/rockPredict/predict', { image: cropCanvas.toDataURL() })
-    .then(res => {
+    axios.post(`https://${apiKey}/rockPredict/predict`, { image: cropCanvas.toDataURL() })
+      .then(res => {
         console.log(res.data);
         setPrediction(res.data.modelOutput);
       })
@@ -228,7 +267,7 @@ const Dashboard = () => {
       .finally(() => {
         setIspredicting(false);
       });
-    };
+  };
 
 
   function clearPoints() {
@@ -283,7 +322,7 @@ const Dashboard = () => {
       <div className="dashboard">
         <div className="left">
           {/* <img src="https://isro.hack2skill.com/2024/assests/images/cover-logo.png" className='logo' /> */}
-          <h2 className='logo'> SurfaceScout </h2> 
+          <h2 className='logo'> SurfaceScout </h2>
           <input type="file" name="file" id="file" onChange={handleFileChange} />
           <h1></h1>
           <label htmlFor="file" className='dropArea'>Upload Mars image &nbsp; &nbsp; <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -298,10 +337,10 @@ const Dashboard = () => {
         </div>
         <div className="right">
           <div className="parent">
-            <div className="child second canvas"> 
-                <div className="child first">
-                  <p1 id="head-text"> You can draw polygon on interest area. </p1>
-                </div>
+            <div className="child second canvas">
+              <div className="child first">
+                <p1 id="head-text"> You can draw polygon on interest area. </p1>
+              </div>
               {imageSrc && (
                 <>
                   <div className="cropping">
@@ -312,7 +351,7 @@ const Dashboard = () => {
                   <div className="child map-buttons">
 
                     {/* selection of model */}
-                     Select Model:
+                    Select Model:
                     <select name="model" id="model">
                       <option value="lunarSurface">Lunar Surface</option>
                       <option value="rockDetect">Rock Detection</option>
@@ -324,16 +363,16 @@ const Dashboard = () => {
                       <button onClick={clearPoints} className='clear'>Clear Boundings</button>
                     </div>
                   </div>
-                
-            </>
-            )
-          }
-          </div>
+
+                </>
+              )
+              }
+            </div>
 
           </div>
         </div>
         <div className='afterPredict'>
-          
+
           <h2> &nbsp; Prediction </h2>
           <h3 className='predictedClass'>Model Output: {prediction}</h3>
         </div>
