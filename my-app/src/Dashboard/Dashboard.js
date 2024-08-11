@@ -23,7 +23,7 @@ const Dashboard = () => {
       }
     }
     if (!apiKey) {
-      const key = prompt('Please enter API key');
+      const key = prompt('Due to limitation in free tier we are hosting via ngrok...here put currunt ngrok link...');
       if (key) {
         setApiKey(key);
         // setting api key in cookie
