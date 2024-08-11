@@ -8,7 +8,7 @@ import rockImage from '../Images/Rock (1).png';
 
 const Dashboard = () => {
   const [imageSrc, setImageSrc] = useState('');
-  const [images, setImages] = useState([demoImage, rockImage]);
+  const [images, setImages] = useState([rockImage, demoImage]);
   const [ispredicting, setIspredicting] = useState(false);
   const [isDonePredicting, setIsDonePredicting] = useState(false);
   const [prediction, setPrediction] = useState("---");
