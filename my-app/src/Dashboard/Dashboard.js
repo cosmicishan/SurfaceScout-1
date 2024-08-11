@@ -4,11 +4,11 @@ import axios from 'axios';
 import { Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import demoImage from '../Images/demoImage.jpg';
-
+import rockImage from '../Images/Rock (1).png';
 
 const Dashboard = () => {
   const [imageSrc, setImageSrc] = useState('');
-  const [images, setImages] = useState([demoImage]);
+  const [images, setImages] = useState([demoImage, rockImage]);
   const [ispredicting, setIspredicting] = useState(false);
   const [isDonePredicting, setIsDonePredicting] = useState(false);
   const [prediction, setPrediction] = useState("---");
