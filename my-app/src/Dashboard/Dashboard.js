@@ -351,8 +351,9 @@ const Dashboard = () => {
                     {/* selection of model */}
                     Select Model:
                     <select name="model" id="model">
-                      <option value="lunarSurface">Lunar Surface</option>
+                
                       <option value="rockDetect">Rock Detection</option>
+                      <option value="lunarSurface">Lunar Surface</option>
                     </select>
 
                     <div className="child third">
