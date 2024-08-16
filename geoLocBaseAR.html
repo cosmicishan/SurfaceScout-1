@@ -10,6 +10,11 @@
   </head>
 <!-- 21.856135, 70.242564 -->
   <body> 
+
+    <div style="z-index: 1000000; color: red;">
+      <h1> Longi:  </h1>
+      <h2> Lati:  </h2>
+    </div>
     <a-scene
       vr-mode-ui="enabled: false"
       arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
@@ -18,10 +23,13 @@
         value="This content will always face you."
         look-at="[gps-camera]"
         scale="120 120 120"
-        gps-entity-place="latitude: 23.022505; longitude: 72.5713621;"
+        gps-entity-place="latitude: 21.856135; longitude: 70.242564;"
+        position="-50 1 -50"
       ></a-text>
       <a-camera gps-camera rotation-reader> </a-camera>
     </a-scene>
+
+
   </body>
 
       <script>
@@ -29,6 +37,9 @@
         navigator.geolocation.getCurrentPosition(function (position) {
           console.log(position.coords.latitude);
           console.log(position.coords.longitude);
+
+            document.querySelector('h1').innerHTML = position.coords.latitude;
+            document.querySelector('h2').innerHTML = position.coords.longitude;
         });
       </script>
 
